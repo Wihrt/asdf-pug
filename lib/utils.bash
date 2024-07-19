@@ -40,9 +40,14 @@ download_release() {
 	local version filename url
 	version="$1"
 	filename="$2"
+	platform="$3"
+	architecture="$4"
+
 
 	# TODO: Adapt the release URL convention for pug
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	# https://github.com/leg100/pug/releases/download/v0.4.2/pug_0.4.2_linux_amd64.zip
+	url="$GH_REPO/releases/download/v${version}/pug_${version}_${platform}_${architecture}.zip"
+	echo "$url"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -71,4 +76,20 @@ install_version() {
 		rm -rf "$install_path"
 		fail "An error occurred while installing $TOOL_NAME $version."
 	)
+}
+
+get_platform() {
+	platform_uname=$(uname -s)
+	case $platform_uname in
+		"Linux")
+			platform_name="linux"
+	esac
+}
+
+get_architecture() {
+	architecture_uname=$(uname -p)
+	case $architecture_uname in
+		"x86_64")
+			architecture_name="amd64"
+	esac
 }
